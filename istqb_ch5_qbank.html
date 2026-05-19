@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="description" content="ISTQB CTFL v4.0 Chapter 5 Question Bank — Managing the Test Activities">
+<title>ISTQB Ch.5 Question Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#21262d;--border:#30363d;
+  --text:#e6edf3;--muted:#8b949e;--faint:#484f58;
+  --accent:#58a6ff;--accent2:#79c0ff;
+  --k1:#3fb950;--k1bg:rgba(63,185,80,.12);
+  --k2:#58a6ff;--k2bg:rgba(88,166,255,.12);
+  --k3:#f78166;--k3bg:rgba(247,129,102,.12);
+  --correct:#238636;--correctbg:rgba(35,134,54,.15);
+  --wrong:#da3633;--wrongbg:rgba(218,54,51,.15);
+  --gold:#e3b341;--goldbg:rgba(227,179,65,.12);
+  --radius:10px;--radius-sm:6px;
+  --shadow:0 1px 3px rgba(0,0,0,.4);
+  --shadow-lg:0 8px 24px rgba(0,0,0,.5);
+  --font-head:'Syne',sans-serif;
+  --font-body:'Source Serif 4',serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;line-height:1.6;font-size:16px}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(13,17,23,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0.75rem 1rem}
+.topbar-inner{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:0.5rem}
+.topbar-row1{display:flex;align-items:center;gap:0.75rem}
+.logo{font-family:var(--font-head);font-size:1rem;font-weight:800;color:var(--text);white-space:nowrap;letter-spacing:-.02em}
+.logo span{color:var(--accent)}
+.score-pills{display:flex;gap:0.4rem;margin-left:auto}
+.pill{font-family:var(--font-head);font-size:.7rem;font-weight:700;padding:3px 8px;border-radius:20px;border:1px solid var(--border);color:var(--muted);letter-spacing:.03em}
+.pill.p-ans{border-color:var(--accent);color:var(--accent)}
+.pill.p-cor{border-color:var(--k1);color:var(--k1)}
+.pill.p-wrg{border-color:var(--k3);color:var(--k3)}
+.pill.p-pct{border-color:var(--gold);color:var(--gold)}
+
+/* ── SEARCH ── */
+.search-wrap{position:relative}
+.search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.45rem .75rem .45rem 2rem;font-family:var(--font-body);font-size:.85rem;color:var(--text);outline:none;transition:border-color .15s}
+.search-input::placeholder{color:var(--faint)}
+.search-input:focus{border-color:var(--accent)}
+.search-icon{position:absolute;left:.6rem;top:50%;transform:translateY(-50%);color:var(--faint);font-size:.85rem;pointer-events:none}
+.search-clear{position:absolute;right:.5rem;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--faint);cursor:pointer;font-size:.85rem;padding:2px 4px;display:none}
+.search-clear.show{display:block}
+
+/* ── FILTERS ── */
+.filters{max-width:720px;margin:0 auto;padding:.6rem 1rem;display:flex;gap:.4rem;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.flt{font-family:var(--font-head);font-size:.7rem;font-weight:700;padding:.3rem .7rem;border-radius:20px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .15s;letter-spacing:.03em}
+.flt:hover{border-color:var(--accent);color:var(--accent)}
+.flt.on-all{border-color:var(--text);color:var(--text)}
+.flt.on-k1{border-color:var(--k1);color:var(--k1);background:var(--k1bg)}
+.flt.on-k2{border-color:var(--k2);color:var(--k2);background:var(--k2bg)}
+.flt.on-k3{border-color:var(--k3);color:var(--k3);background:var(--k3bg)}
+.flt.on-sec{border-color:var(--accent);color:var(--accent);background:var(--k2bg)}
+
+/* ── PROGRESS ── */
+.prog-bar-wrap{max-width:720px;margin:0 auto;padding:0 1rem .4rem}
+.prog-bar{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--k1),var(--accent));border-radius:2px;transition:width .3s;width:0%}
+.prog-label{font-size:.68rem;color:var(--faint);margin-top:3px;font-family:var(--font-head);letter-spacing:.04em}
+
+/* ── RESULTS COUNT ── */
+.results-count{max-width:720px;margin:0 auto;padding:.4rem 1rem 0;font-size:.75rem;color:var(--muted);font-family:var(--font-head)}
+
+/* ── CHAPTER / SECTION HEADERS ── */
+.main{max-width:720px;margin:0 auto;padding:.75rem 1rem 5rem}
+.section-group{margin-bottom:1.5rem}
+.section-hd{display:flex;align-items:center;gap:.6rem;padding:.5rem 0;margin-bottom:.6rem;border-bottom:1px solid var(--border)}
+.section-hd-icon{width:28px;height:28px;border-radius:var(--radius-sm);background:var(--surface2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:.65rem;font-weight:800;color:var(--accent);flex-shrink:0}
+.section-hd-info{}
+.section-hd-title{font-family:var(--font-head);font-size:.85rem;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.section-hd-sub{font-size:.7rem;color:var(--muted);margin-top:1px}
+.section-hd-count{margin-left:auto;font-family:var(--font-head);font-size:.65rem;color:var(--faint)}
+
+/* ── QUESTION CARD ── */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:.6rem;overflow:hidden;transition:box-shadow .2s;display:block}
+.q-card:hover{box-shadow:var(--shadow-lg)}
+.q-card.hidden{display:none}
+.q-head{padding:.75rem 1rem .5rem;background:var(--surface)}
+.q-meta{display:flex;align-items:center;gap:.4rem;margin-bottom:.45rem;flex-wrap:wrap}
+.q-num{font-family:var(--font-head);font-size:.65rem;font-weight:700;color:var(--faint);letter-spacing:.05em}
+.q-lo{font-family:var(--font-head);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.04em}
+.lo-k1{background:var(--k1bg);color:var(--k1);border:1px solid rgba(63,185,80,.3)}
+.lo-k2{background:var(--k2bg);color:var(--k2);border:1px solid rgba(88,166,255,.3)}
+.lo-k3{background:var(--k3bg);color:var(--k3);border:1px solid rgba(247,129,102,.3)}
+.q-obj{font-size:.65rem;color:var(--muted);font-family:var(--font-head);letter-spacing:.02em}
+.q-text{font-size:.92rem;color:var(--text);line-height:1.55;font-weight:400}
+.q-scenario{background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 var(--radius-sm) var(--radius-sm) 0;padding:.55rem .75rem;margin:.5rem 0;font-size:.83rem;color:var(--accent2);font-style:italic;line-height:1.5}
+
+/* ── OPTIONS ── */
+.q-body{padding:.5rem 1rem .75rem}
+.opts{display:flex;flex-direction:column;gap:.35rem}
+.opt{display:flex;align-items:flex-start;gap:.6rem;padding:.55rem .7rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);cursor:pointer;text-align:left;font-family:var(--font-body);font-size:.85rem;color:var(--text);line-height:1.5;transition:border-color .15s,background .15s,transform .1s;width:100%;position:relative}
+.opt:hover:not([disabled]){border-color:var(--accent);transform:translateX(2px)}
+.opt-letter{min-width:20px;height:20px;border-radius:50%;background:var(--surface);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--font-head);font-size:.65rem;font-weight:700;color:var(--muted);flex-shrink:0;margin-top:1px;transition:background .15s,color .15s,border-color .15s}
+.opt.correct{border-color:var(--correct)!important;background:var(--correctbg)}
+.opt.correct .opt-letter{background:var(--correct);color:#fff;border-color:var(--correct)}
+.opt.wrong{border-color:var(--wrong)!important;background:var(--wrongbg)}
+.opt.wrong .opt-letter{background:var(--wrong);color:#fff;border-color:var(--wrong)}
+.opt.reveal{border-color:var(--accent)!important;background:var(--k2bg)}
+.opt.reveal .opt-letter{background:var(--accent);color:#fff;border-color:var(--accent)}
+.opt[disabled]{cursor:default}
+.opt-icon{margin-left:auto;font-size:.9rem;flex-shrink:0;opacity:0}
+.opt.correct .opt-icon,.opt.wrong .opt-icon,.opt.reveal .opt-icon{opacity:1}
+
+/* ── RESULT AREA ── */
+.result-area{margin-top:.6rem;display:none}
+.result-area.show{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.result-verdict{display:flex;align-items:center;gap:.5rem;padding:.5rem .7rem;border-radius:var(--radius-sm);margin-bottom:.4rem;font-family:var(--font-head);font-size:.75rem;font-weight:700;letter-spacing:.03em}
+.verdict-correct{background:var(--correctbg);color:var(--k1);border:1px solid rgba(35,134,54,.3)}
+.verdict-wrong{background:var(--wrongbg);color:var(--k3);border:1px solid rgba(218,54,51,.3)}
+.verdict-reveal{background:var(--k2bg);color:var(--accent);border:1px solid rgba(88,166,255,.3)}
+.exp-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.exp-main{padding:.65rem .8rem;font-size:.82rem;color:var(--text);line-height:1.6}
+.exp-obj-tag{display:inline-block;font-family:var(--font-head);font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:3px;margin-bottom:.4rem;letter-spacing:.04em}
+.why-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;padding:.45rem .8rem;background:none;border:none;border-top:1px solid var(--border);color:var(--muted);font-family:var(--font-head);font-size:.7rem;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:color .15s}
+.why-toggle:hover{color:var(--text)}
+.why-toggle .arrow{transition:transform .2s;font-style:normal}
+.why-toggle.open .arrow{transform:rotate(180deg)}
+.why-content{display:none;padding:.5rem .8rem .65rem;font-size:.8rem;color:var(--muted);line-height:1.55;border-top:1px solid var(--border)}
+.why-content.open{display:block;animation:fadeIn .2s ease}
+.why-item{margin-bottom:.4rem;display:flex;gap:.4rem}
+.why-item:last-child{margin-bottom:0}
+.why-letter{font-family:var(--font-head);font-size:.65rem;font-weight:700;color:var(--faint);min-width:14px;margin-top:2px}
+.why-item.is-correct .why-letter{color:var(--k1)}
+.reveal-btn{margin-top:.5rem;font-family:var(--font-head);font-size:.72rem;font-weight:700;padding:.35rem .8rem;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:.04em;transition:all .15s;width:100%}
+.reveal-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* ── DONE BANNER ── */
+.done-banner{display:none;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:2rem 1.25rem;text-align:center;margin:1rem 0}
+.done-banner.show{display:block}
+.done-score{font-family:var(--font-head);font-size:2.5rem;font-weight:800;color:var(--gold);line-height:1}
+.done-label{font-family:var(--font-head);font-size:.75rem;color:var(--muted);margin:.3rem 0 .6rem;letter-spacing:.06em;text-transform:uppercase}
+.done-msg{font-size:.85rem;color:var(--muted);margin-bottom:1.25rem;line-height:1.5}
+.done-actions{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--font-head);font-size:.75rem;font-weight:700;padding:.45rem 1rem;border-radius:var(--radius-sm);border:1.5px solid transparent;cursor:pointer;letter-spacing:.04em;transition:all .18s}
+.btn-primary{background:var(--accent);color:#0d1117;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent2)}
+.btn-ghost{background:transparent;color:var(--muted);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--text)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:3rem 1rem;color:var(--faint)}
+.empty-icon{font-size:2rem;margin-bottom:.75rem}
+.empty-msg{font-family:var(--font-head);font-size:.85rem}
+
+/* ── CTRL BAR ── */
+.ctrl-bar{max-width:720px;margin:0 auto;padding:.4rem 1rem;display:flex;gap:.5rem;flex-wrap:wrap}
+
+/* ── SCROLL TOP ── */
+.scroll-top{position:fixed;bottom:1.25rem;right:1rem;width:36px;height:36px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;opacity:0;transition:opacity .2s,color .15s;z-index:50}
+.scroll-top.visible{opacity:1}
+.scroll-top:hover{color:var(--accent)}
+
+/* ── REF CARD ── */
+.ref-card{max-width:720px;margin:0 auto 1rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.ref-card-header{display:flex;align-items:center;justify-content:space-between;padding:.65rem 1rem;background:var(--surface2);cursor:pointer;border:none;width:100%;text-align:left}
+.ref-card-title{font-family:var(--font-head);font-size:.78rem;font-weight:700;color:var(--text);letter-spacing:.02em}
+.ref-body{display:none;padding:.75rem 1rem}
+.ref-body.open{display:block}
+.ref-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.ref-table th{background:var(--surface2);color:var(--muted);font-family:var(--font-head);font-size:.65rem;font-weight:700;padding:.4rem .6rem;text-align:left;letter-spacing:.05em;border-bottom:1px solid var(--border)}
+.ref-table td{padding:.4rem .6rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text);line-height:1.4}
+.ref-table tr:last-child td{border-bottom:none}
+.ref-table .lo-code{font-family:var(--font-head);font-size:.68rem;font-weight:700;white-space:nowrap}
+
+@media(max-width:400px){
+  body{font-size:15px}
+  .q-text{font-size:.88rem}
+  .opt{font-size:.82rem}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-row1">
+      <div class="logo">ISTQB <span>Ch.5</span></div>
+      <div class="score-pills">
+        <span class="pill p-ans" id="s-ans" title="Answered">0 ans</span>
+        <span class="pill p-cor" id="s-cor" title="Correct">0 ✓</span>
+        <span class="pill p-wrg" id="s-wrg" title="Wrong">0 ✗</span>
+        <span class="pill p-pct" id="s-pct">—%</span>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="search" id="search" placeholder="Search by topic, K-level, section… e.g. K2  5.2  risk  defect" autocomplete="off" spellcheck="false">
+      <button class="search-clear" id="search-clear" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+</header>
+
+<!-- FILTERS -->
+<div class="filters" id="filters">
+  <button class="flt on-all" data-f="all" onclick="setFilter('all',this)">All</button>
+  <button class="flt" data-f="k1" onclick="setFilter('k1',this)">K1</button>
+  <button class="flt" data-f="k2" onclick="setFilter('k2',this)">K2</button>
+  <button class="flt" data-f="k3" onclick="setFilter('k3',this)">K3</button>
+  <button class="flt" data-f="5.1" onclick="setFilter('5.1',this)">§5.1 Planning</button>
+  <button class="flt" data-f="5.1.1" onclick="setFilter('5.1.1',this)">§5.1.1 Test Plan</button>
+  <button class="flt" data-f="5.1.2" onclick="setFilter('5.1.2',this)">§5.1.2 Iteration</button>
+  <button class="flt" data-f="5.1.3" onclick="setFilter('5.1.3',this)">§5.1.3 Entry/Exit</button>
+  <button class="flt" data-f="5.1.4" onclick="setFilter('5.1.4',this)">§5.1.4 Estimation</button>
+  <button class="flt" data-f="5.1.5" onclick="setFilter('5.1.5',this)">§5.1.5 Prioritization</button>
+  <button class="flt" data-f="5.1.6" onclick="setFilter('5.1.6',this)">§5.1.6 Pyramid</button>
+  <button class="flt" data-f="5.1.7" onclick="setFilter('5.1.7',this)">§5.1.7 Quadrants</button>
+  <button class="flt" data-f="5.2" onclick="setFilter('5.2',this)">§5.2 Risk</button>
+  <button class="flt" data-f="5.3" onclick="setFilter('5.3',this)">§5.3 Monitoring</button>
+  <button class="flt" data-f="5.4" onclick="setFilter('5.4',this)">§5.4 Config Mgmt</button>
+  <button class="flt" data-f="5.5" onclick="setFilter('5.5',this)">§5.5 Defects</button>
+</div>
+
+<!-- PROGRESS -->
+<div class="prog-bar-wrap">
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
+  <div class="prog-label" id="prog-label">0 of 0 answered</div>
+</div>
+
+<!-- CONTROLS -->
+<div class="ctrl-bar">
+  <button class="btn btn-primary" onclick="revealAll()">Show all answers</button>
+  <button class="btn btn-ghost" onclick="resetAll()">Reset</button>
+  <span class="results-count" id="results-count" style="margin-left:auto;line-height:2"></span>
+</div>
+
+<!-- REFERENCE CARD -->
+<div class="ref-card" id="ref-card">
+  <button class="ref-card-header" onclick="toggleRef()">
+    <span class="ref-card-title">📋 Chapter 5 — Learning Objectives Quick Reference</span>
+    <span id="ref-arrow" style="color:var(--muted);font-size:.8rem">▼</span>
+  </button>
+  <div class="ref-body" id="ref-body">
+    <table class="ref-table">
+      <tr><th>LO</th><th>K</th><th>Objective</th></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.1.1</td><td><span class="q-lo lo-k2">K2</span></td><td>Exemplify the purpose and content of a test plan</td></tr>
+      <tr><td class="lo-code" style="color:var(--k1)">FL-5.1.2</td><td><span class="q-lo lo-k1">K1</span></td><td>Recognize how a tester adds value to iteration and release planning</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.1.3</td><td><span class="q-lo lo-k2">K2</span></td><td>Compare and contrast entry criteria and exit criteria</td></tr>
+      <tr><td class="lo-code" style="color:var(--k3)">FL-5.1.4</td><td><span class="q-lo lo-k3">K3</span></td><td>Use estimation techniques to calculate the required test effort</td></tr>
+      <tr><td class="lo-code" style="color:var(--k3)">FL-5.1.5</td><td><span class="q-lo lo-k3">K3</span></td><td>Apply test case prioritization</td></tr>
+      <tr><td class="lo-code" style="color:var(--k1)">FL-5.1.6</td><td><span class="q-lo lo-k1">K1</span></td><td>Recall the concepts of the test pyramid</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.1.7</td><td><span class="q-lo lo-k2">K2</span></td><td>Summarize the testing quadrants and their relationships with test levels and test types</td></tr>
+      <tr><td class="lo-code" style="color:var(--k1)">FL-5.2.1</td><td><span class="q-lo lo-k1">K1</span></td><td>Identify risk level by using risk likelihood and risk impact</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.2.2</td><td><span class="q-lo lo-k2">K2</span></td><td>Distinguish between project risks and product risks</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.2.3</td><td><span class="q-lo lo-k2">K2</span></td><td>Explain how product risk analysis may influence thoroughness and test scope</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.2.4</td><td><span class="q-lo lo-k2">K2</span></td><td>Explain what measures can be taken in response to analyzed product risks</td></tr>
+      <tr><td class="lo-code" style="color:var(--k1)">FL-5.3.1</td><td><span class="q-lo lo-k1">K1</span></td><td>Recall metrics used for testing</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.3.2</td><td><span class="q-lo lo-k2">K2</span></td><td>Summarize the purposes, content, and audiences for test reports</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.3.3</td><td><span class="q-lo lo-k2">K2</span></td><td>Exemplify how to communicate the status of testing</td></tr>
+      <tr><td class="lo-code" style="color:var(--k2)">FL-5.4.1</td><td><span class="q-lo lo-k2">K2</span></td><td>Summarize how configuration management supports testing</td></tr>
+      <tr><td class="lo-code" style="color:var(--k3)">FL-5.5.1</td><td><span class="q-lo lo-k3">K3</span></td><td>Prepare a defect report</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="main"></main>
+<div class="done-banner" id="done-banner">
+  <div class="done-score" id="done-score"></div>
+  <div class="done-label">Final Score</div>
+  <div class="done-msg" id="done-msg"></div>
+  <div class="done-actions">
+    <button class="btn btn-primary" onclick="resetAll()">Try again</button>
+    <button class="btn btn-ghost" onclick="revealAll()">Review all answers</button>
+  </div>
+</div>
+
+<button class="scroll-top" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+// ═══════════════════════════════════════════════════════
+//  QUESTION BANK DATA
+// ═══════════════════════════════════════════════════════
+const SECTIONS = [
+  { id:'5.1.1', label:'5.1.1 Purpose and Content of a Test Plan', lo:'FL-5.1.1', k:2 },
+  { id:'5.1.2', label:'5.1.2 Tester\'s Contribution to Iteration and Release Planning', lo:'FL-5.1.2', k:1 },
+  { id:'5.1.3', label:'5.1.3 Entry Criteria and Exit Criteria', lo:'FL-5.1.3', k:2 },
+  { id:'5.1.4', label:'5.1.4 Estimation Techniques', lo:'FL-5.1.4', k:3 },
+  { id:'5.1.5', label:'5.1.5 Test Case Prioritization', lo:'FL-5.1.5', k:3 },
+  { id:'5.1.6', label:'5.1.6 Test Pyramid', lo:'FL-5.1.6', k:1 },
+  { id:'5.1.7', label:'5.1.7 Testing Quadrants', lo:'FL-5.1.7', k:2 },
+  { id:'5.2.1', label:'5.2.1 Risk Definition and Risk Attributes', lo:'FL-5.2.1', k:1 },
+  { id:'5.2.2', label:'5.2.2 Project Risks and Product Risks', lo:'FL-5.2.2', k:2 },
+  { id:'5.2.3', label:'5.2.3 Product Risk Analysis', lo:'FL-5.2.3', k:2 },
+  { id:'5.2.4', label:'5.2.4 Product Risk Control', lo:'FL-5.2.4', k:2 },
+  { id:'5.3.1', label:'5.3.1 Metrics used in Testing', lo:'FL-5.3.1', k:1 },
+  { id:'5.3.2', label:'5.3.2 Purpose, Content and Audience for Test Reports', lo:'FL-5.3.2', k:2 },
+  { id:'5.3.3', label:'5.3.3 Communicating the Status of Testing', lo:'FL-5.3.3', k:2 },
+  { id:'5.4.1', label:'5.4.1 Configuration Management', lo:'FL-5.4.1', k:2 },
+  { id:'5.5.1', label:'5.5.1 Defect Management', lo:'FL-5.5.1', k:3 },
+];
+
+const QB = [
+// ── 5.1.1 ───────────────────────────────────────────────────────────────
+{id:'Q001',sec:'5.1.1',k:1,lo:'FL-5.1.1',obj:'Recall the definition of a test plan',
+ q:'What does a test plan describe?',
+ opts:['The test objectives, resources, and processes for a test project','The detailed test cases and expected results for each test','The bug reports and defect log for a test project','The automated scripts used in regression testing'],
+ ans:0,
+ exp:'A test plan describes the test objectives, resources and processes for a test project — this is the core definition in ISTQB CTFL v4.0 section 5.1.1.',
+ why:['A — Correct. The exact definition from the syllabus.','B — Incorrect. Detailed test cases belong in the test suite, not the test plan.','C — Incorrect. Defect logs are test execution work products, not plan content.','D — Incorrect. Automated scripts are test implementation work products.']},
+
+{id:'Q002',sec:'5.1.1',k:1,lo:'FL-5.1.1',obj:'Recall the four purposes of a test plan',
+ q:"Which of the following is one of the four stated purposes of a test plan?",
+ opts:['To record pass/fail results of each test case','To serve as a means of communication with team members and other stakeholders','To generate automated test scripts for regression testing','To specify the source code modules under test'],
+ ans:1,
+ exp:'Serving as a means of communication with team members and other stakeholders is one of the four explicitly stated purposes of a test plan in the ISTQB syllabus.',
+ why:['A — Incorrect. Pass/fail results are recorded in test execution logs.','B — Correct. Explicitly listed as a purpose in section 5.1.1.','C — Incorrect. Script generation is a test implementation activity.','D — Incorrect. Source code modules are part of the test basis, not a test plan purpose.']},
+
+{id:'Q003',sec:'5.1.1',k:1,lo:'FL-5.1.1',obj:'Recall the seven sections of a test plan',
+ q:'Which of the following is a top-level section of a typical test plan?',
+ opts:['Test execution log','Budget and schedule','Defect density report','Test automation framework'],
+ ans:1,
+ exp:'Budget and schedule is one of the seven top-level content sections of a typical test plan listed in the ISTQB CTFL v4.0 syllabus.',
+ why:['A — Incorrect. A test execution log is a test execution work product, not a test plan section.','B — Correct. Budget and schedule is one of the seven sections.','C — Incorrect. Defect density is a metric reported post-execution.','D — Incorrect. Automation frameworks are tools, not test plan sections.']},
+
+{id:'Q004',sec:'5.1.1',k:1,lo:'FL-5.1.1',obj:"Recall what belongs in 'Context of testing'",
+ q:"Which item is listed as an example under the 'Context of testing' section of a test plan?",
+ opts:['Product risks','Forms of communication','Test basis','Entry criteria'],
+ ans:2,
+ exp:"The syllabus gives 'test scope, test objectives, test basis' as the three examples under Context of testing.",
+ why:['A — Incorrect. Product risks belong in the Risk register section.','B — Incorrect. Forms of communication belong in the Communication section.','C — Correct. Test basis is one of the three examples under Context of testing.','D — Incorrect. Entry criteria belong in the Test approach section.']},
+
+{id:'Q005',sec:'5.1.1',k:1,lo:'FL-5.1.1',obj:"Recall what belongs in 'Test approach'",
+ q:"Which item is an example listed under the 'Test approach' section of a test plan?",
+ opts:['Hiring and training needs','Documentation templates','Independence of testing','Project risks'],
+ ans:2,
+ exp:"Independence of testing is explicitly listed as a sub-item of the Test approach section in the ISTQB syllabus.",
+ why:['A — Incorrect. Hiring and training needs are listed under Stakeholders.','B — Incorrect. Documentation templates belong in the Communication section.','C — Correct. Independence of testing is a Test approach sub-item.','D — Incorrect. Project risks belong in the Risk register.']},
+
+{id:'Q006',sec:'5.1.1',k:2,lo:'FL-5.1.1',obj:'Exemplify the purpose: demonstrates adherence/deviation from test strategy',
+ q:"A test plan states: 'The company test strategy requires four test levels, but component integration testing will be skipped due to budget constraints.' Which purpose of a test plan does this serve?",
+ opts:['Documents the means and schedule for achieving test objectives','Demonstrates that testing will adhere to the test strategy, or explains why testing will deviate from it','Helps ensure that performed activities will meet the established criteria','Serves as a means of communication with stakeholders'],
+ ans:1,
+ exp:'Explaining why a test level required by the strategy will be skipped directly serves the purpose of demonstrating adherence to, or explaining deviation from, the test strategy.',
+ why:['A — Incorrect. That purpose relates to documenting the schedule and approach, not explaining strategy deviations.','B — Correct. Stating the deviation and its reason fulfils this specific purpose.','C — Incorrect. That purpose relates to defining criteria such as exit criteria.','D — Incorrect. While communication is a purpose, the substance here is the strategy deviation, not the act of communicating.']},
+
+{id:'Q007',sec:'5.1.1',k:2,lo:'FL-5.1.1',obj:'Classify test plan content into the correct section',
+ q:"A test plan contains: 'All automated scripts must achieve peer review before inclusion in the regression suite; testers will have no involvement in the requirements review phase.' Which section does this belong to?",
+ opts:['Stakeholders','Risk register','Test approach','Communication'],
+ ans:2,
+ exp:'Test deliverable quality requirements and independence of testing constraints are both sub-items of the Test approach section.',
+ why:['A — Incorrect. Stakeholders covers roles and responsibilities, not testing methodology constraints.','B — Incorrect. The risk register records risks, not methodology rules.','C — Correct. Independence of testing and test deliverable requirements are listed under Test approach.','D — Incorrect. Communication covers forms and frequency of communication.']},
+
+{id:'Q008',sec:'5.1.1',k:2,lo:'FL-5.1.1',obj:'Identify content incorrectly placed in a test plan',
+ q:'A test plan review finds that detailed step-by-step test scripts for the login module have been placed inside the test plan. Is this correct?',
+ opts:['Yes — test scripts are a test deliverable and belong in the test plan','Yes — the test approach section should contain all test scripts','No — detailed test scripts are test implementation artefacts and belong in the test suite, not the test plan','No — test scripts belong in the risk register'],
+ ans:2,
+ exp:'The test plan references test deliverables in general terms (e.g., "automated test scripts will be produced") but does not contain the actual scripts. Those are test implementation work products that reside in the test suite.',
+ why:['A — Incorrect. While scripts are deliverables, they do not live inside the plan.','B — Incorrect. Test approach describes what deliverables will be produced, not the deliverables themselves.','C — Correct. Detailed test scripts are test implementation artefacts, not test plan content.','D — Incorrect. The risk register records risks, not test scripts.']},
+
+{id:'Q009',sec:'5.1.1',k:2,lo:'FL-5.1.1',obj:'Explain the value of preparing a test plan',
+ q:'Why is the process of preparing a test plan considered valuable even before testing begins?',
+ opts:['It allows testers to begin test execution immediately','It is a useful way to think through the efforts needed to achieve the test objectives and forces testers to confront future challenges','It guarantees all defects will be discovered','It replaces the need for a test strategy at the organisational level'],
+ ans:1,
+ exp:"The syllabus states: 'The process of preparing a test plan is a useful way to think through the efforts needed to achieve the test objectives' — the planning process itself has value.",
+ why:['A — Incorrect. The test plan does not authorise early execution.','B — Correct. The planning process forces testers to think ahead about risks, effort, tools, and schedule.','C — Incorrect. No test plan guarantees complete defect discovery.','D — Incorrect. The test plan is project-specific; the strategy is organisational.']},
+
+{id:'Q010',sec:'5.1.1',k:3,lo:'FL-5.1.1',obj:'Apply knowledge to classify real test plan content',
+ q:"You are drafting a test plan for a safety-critical system. A regulator requires 100% MC/DC coverage — stricter than your company's strategy, which requires only statement coverage. Where should this be documented?",
+ opts:["In the risk register, as it is a project risk","In assumptions and constraints, as it is a constraint","In the test approach, noting the deviation from the company test strategy and the regulatory reason","In the communication section, for the regulator's awareness"],
+ ans:2,
+ exp:'Coverage criteria are exit criteria — a sub-item of test approach. Since this deviates from the existing test strategy, the test plan must also explain that deviation within test approach.',
+ why:['A — Incorrect. The risk register records risks, not methodology requirements.','B — Incorrect. Assumptions and constraints covers project-level conditions, not testing methodology.','C — Correct. Coverage criteria (exit criteria) belong in test approach; the deviation from strategy must also be documented there.','D — Incorrect. The communication section covers reporting, not testing methodology.']},
+
+// ── 5.1.2 ───────────────────────────────────────────────────────────────
+{id:'Q011',sec:'5.1.2',k:1,lo:'FL-5.1.2',obj:'Recognise the two types of planning in iterative SDLCs',
+ q:'In iterative SDLCs, which two types of planning does the ISTQB syllabus describe?',
+ opts:['Sprint planning and project planning','Release planning and iteration planning','Strategic planning and operational planning','Risk planning and schedule planning'],
+ ans:1,
+ exp:'Section 5.1.2 states: "In iterative SDLCs, typically two kinds of planning occur: release planning and iteration planning."',
+ why:['A — Incorrect. Sprint planning is part of iteration planning but not the syllabus terminology.','B — Correct. Release planning and iteration planning are the two types named.','C — Incorrect. These are not ISTQB syllabus terms for testing planning types.','D — Incorrect. Risk and schedule planning are aspects of test planning, not the two types.']},
+
+{id:'Q012',sec:'5.1.2',k:1,lo:'FL-5.1.2',obj:'Recognise tester activities in release planning',
+ q:'Which of the following is a tester activity during release planning?',
+ opts:['Decomposing user stories into coding tasks for developers','Writing testable user stories and acceptance criteria','Conducting daily stand-up meetings','Approving the product release'],
+ ans:1,
+ exp:'The syllabus lists writing testable user stories and acceptance criteria as one of the tester activities in release planning.',
+ why:['A — Incorrect. Coding task decomposition is a developer activity.','B — Correct. Writing testable user stories and acceptance criteria is a tester activity in release planning.','C — Incorrect. Stand-ups are agile ceremonies, not a specific tester release planning contribution.','D — Incorrect. Release approval is a management/product owner decision.']},
+
+{id:'Q013',sec:'5.1.2',k:1,lo:'FL-5.1.2',obj:'Recognise tester activities in iteration planning',
+ q:'Which of the following is a tester activity during iteration planning?',
+ opts:['Defining the product backlog','Performing detailed risk analysis of user stories','Writing the sprint retrospective report','Approving the sprint goal'],
+ ans:1,
+ exp:'The syllabus states testers involved in iteration planning "participate in the detailed risk analysis of user stories."',
+ why:['A — Incorrect. The product backlog is owned by the Product Owner.','B — Correct. Detailed risk analysis of user stories is listed as a tester activity in iteration planning.','C — Incorrect. Retrospective reports are a team activity, not specific to iteration planning.','D — Incorrect. Sprint goal approval is a team/PO activity.']},
+
+{id:'Q014',sec:'5.1.2',k:1,lo:'FL-5.1.2',obj:'Distinguish release planning from iteration planning focus',
+ q:'What is the primary focus of release planning?',
+ opts:['The iteration backlog for the current sprint','The product backlog and the test approach across all iterations','Defect triage for the current release candidate','The automated regression test suite'],
+ ans:1,
+ exp:'The syllabus states release planning "looks ahead to the release of a product, defines and re-defines the product backlog" and "serves as the basis for the test approach and test plan across all iterations."',
+ why:['A — Incorrect. The iteration backlog is the focus of iteration planning.','B — Correct. Release planning focuses on the product backlog and the cross-iteration test approach.','C — Incorrect. Defect triage is a test monitoring/control activity.','D — Incorrect. Regression suites are test implementation artefacts.']},
+
+// ── 5.1.3 ───────────────────────────────────────────────────────────────
+{id:'Q015',sec:'5.1.3',k:1,lo:'FL-5.1.3',obj:'Recall the definition of entry criteria',
+ q:'What do entry criteria define?',
+ opts:['What must be achieved to declare an activity completed','The preconditions for undertaking a given activity','The risks associated with starting a test level early','The metrics to be collected during testing'],
+ ans:1,
+ exp:'The syllabus defines entry criteria as: "the preconditions for undertaking a given activity."',
+ why:['A — Incorrect. That is the definition of exit criteria.','B — Correct. Entry criteria define the preconditions.','C — Incorrect. Risks are in the risk register.','D — Incorrect. Metrics belong in the test approach section.']},
+
+{id:'Q016',sec:'5.1.3',k:1,lo:'FL-5.1.3',obj:'Recall the definition of exit criteria',
+ q:'What do exit criteria define?',
+ opts:['The preconditions for starting a test level','The conditions under which a tester may leave a project','What must be achieved to declare an activity completed','The test techniques required at each test level'],
+ ans:2,
+ exp:'The syllabus defines exit criteria as: "what must be achieved to declare an activity completed."',
+ why:['A — Incorrect. That is the definition of entry criteria.','B — Incorrect. Personnel decisions are not related to exit criteria.','C — Correct. Exit criteria define what must be achieved for completion.','D — Incorrect. Test techniques are listed in the test approach section.']},
+
+{id:'Q017',sec:'5.1.3',k:1,lo:'FL-5.1.3',obj:'Recall Agile synonyms for entry and exit criteria',
+ q:'In Agile software development, what are exit criteria often called?',
+ opts:['Definition of Ready','Acceptance criteria','Definition of Done','Sprint review checklist'],
+ ans:2,
+ exp:'The syllabus states: "In Agile software development, exit criteria are often called Definition of Done."',
+ why:['A — Incorrect. Definition of Ready is the Agile name for entry criteria.','B — Incorrect. Acceptance criteria are the conditions a user story must meet, part of the test basis.','C — Correct. Definition of Done is the Agile equivalent of exit criteria.','D — Incorrect. Sprint review checklist is not an ISTQB term.']},
+
+{id:'Q018',sec:'5.1.3',k:2,lo:'FL-5.1.3',obj:'Compare and contrast entry and exit criteria',
+ q:'Which of the following is a typical EXIT criterion?',
+ opts:['Test environment is available and configured','Test basis (requirements specification) is approved','All smoke tests have passed','Achieved statement coverage has reached the target level'],
+ ans:3,
+ exp:'Achieved coverage level is a "measure of thoroughness" — which the syllabus lists as a typical exit criterion.',
+ why:['A — Incorrect. Environment availability is a typical entry criterion (availability of resources).','B — Incorrect. An approved test basis is a typical entry criterion (availability of testware).','C — Incorrect. All smoke tests passed is a typical entry criterion (initial quality level of the test object).','D — Correct. Achieved coverage level is explicitly listed as a typical exit criterion.']},
+
+{id:'Q019',sec:'5.1.3',k:2,lo:'FL-5.1.3',obj:'Classify entry and exit criteria examples',
+ q:'Which of the following is a typical ENTRY criterion?',
+ opts:['Defect density is below 0.5 defects per KLOC','All planned tests have been executed','All regression tests are automated','Test data is available in the test environment'],
+ ans:3,
+ exp:'Availability of resources — including test data — is listed as a typical entry criterion in section 5.1.3.',
+ why:['A — Incorrect. Defect density is a thoroughness measure and a typical exit criterion.','B — Incorrect. Execution of planned tests is a binary yes/no exit criterion.','C — Incorrect. Automated regression tests is a binary exit criterion.','D — Correct. Test data availability is a resource availability entry criterion.']},
+
+{id:'Q020',sec:'5.1.3',k:2,lo:'FL-5.1.3',obj:'Explain when running out of time counts as exit criterion',
+ q:"A project runs out of budget before all planned tests are executed. Can this be considered a valid exit criterion?",
+ opts:["No — only technical criteria like coverage and defect counts are valid exit criteria","Yes — running out of time or budget can be a valid exit criterion if stakeholders have reviewed and accepted the risk","Yes — budget exhaustion is always an automatic exit criterion requiring no stakeholder review","No — testing must always continue until all test cases are executed"],
+ ans:1,
+ exp:'The syllabus states: "Running out of time or budget can also be viewed as valid exit criteria… if the stakeholders have reviewed and accepted the risk to go live without further testing."',
+ why:['A — Incorrect. The syllabus explicitly includes time/budget exhaustion as valid.','B — Correct. It is valid provided stakeholders have reviewed and accepted the risk.','C — Incorrect. Stakeholder review and acceptance is required — it is not automatic.','D — Incorrect. Testing does not always have to continue until all tests are executed.']},
+
+// ── 5.1.4 ───────────────────────────────────────────────────────────────
+{id:'Q021',sec:'5.1.4',k:1,lo:'FL-5.1.4',obj:'Recall the four estimation techniques',
+ q:'How many test effort estimation techniques are described in the ISTQB CTFL v4.0 syllabus?',
+ opts:['Two','Three','Four','Five'],
+ ans:2,
+ exp:'Section 5.1.4 states: "In this syllabus, the following four estimation techniques are described."',
+ why:['A — Incorrect. There are four, not two.','B — Incorrect. There are four, not three.','C — Correct. The syllabus describes exactly four techniques.','D — Incorrect. There are four, not five.']},
+
+{id:'Q022',sec:'5.1.4',k:1,lo:'FL-5.1.4',obj:'Recall estimation based on ratios',
+ q:'What is "estimation based on ratios"?',
+ opts:['A technique that calculates effort using three-point estimates','A metrics-based technique using standard ratios derived from previous similar projects','A technique based on expert opinion and consensus','A technique that uses story points to estimate effort'],
+ ans:1,
+ exp:'Estimation based on ratios is described as a metrics-based technique where figures from previous projects are used to derive standard ratios for similar future projects.',
+ why:['A — Incorrect. Three-point estimates describe the three-point estimation technique.','B — Correct. Ratios from previous similar projects are the basis of this technique.','C — Incorrect. That describes the Wideband Delphi/expert-based approach.','D — Incorrect. Story points are used in planning poker, not estimation based on ratios.']},
+
+{id:'Q023',sec:'5.1.4',k:1,lo:'FL-5.1.4',obj:'Recall the extrapolation technique',
+ q:'Which estimation technique is most suitable for iterative SDLCs because it uses observations from the current project?',
+ opts:['Estimation based on ratios','Extrapolation','Three-point estimation','Wideband Delphi'],
+ ans:1,
+ exp:'The syllabus states extrapolation "is very suitable in iterative SDLCs" as it uses measurements made as early as possible in the current project.',
+ why:['A — Incorrect. Estimation based on ratios uses previous project data, not current project data.','B — Correct. Extrapolation uses current project data and is well-suited to iterative SDLCs.','C — Incorrect. Three-point estimation is suited for individual high-risk tasks.','D — Incorrect. Wideband Delphi is expert-consensus based.']},
+
+{id:'Q024',sec:'5.1.4',k:3,lo:'FL-5.1.4',obj:'Apply three-point estimation formula',
+ q:'A team uses three-point estimation for a task. The most optimistic estimate is 2 person-hours, the most likely is 11 person-hours, and the most pessimistic is 14 person-hours. What is the final estimate?',
+ opts:['9 person-hours','10 person-hours','10.5 person-hours','11 person-hours'],
+ ans:1,
+ exp:'Three-point estimation formula: (optimistic + 4×most likely + pessimistic) / 6 = (2 + 44 + 14) / 6 = 60 / 6 = 10 person-hours.',
+ why:['A — Incorrect. Result of (2+11+14)/3 = 9, which is the simple average, not the weighted formula.','B — Correct. (2 + 4×11 + 14) / 6 = 60/6 = 10.','C — Incorrect. This does not match the formula.','D — Incorrect. 11 is the most likely estimate, not the weighted result.']},
+
+{id:'Q025',sec:'5.1.4',k:3,lo:'FL-5.1.4',obj:'Apply estimation based on ratios',
+ q:'In the previous project, the development-to-test effort ratio was 3:2. The current project has an expected development effort of 600 person-days. What is the estimated test effort?',
+ opts:['200 person-days','300 person-days','400 person-days','900 person-days'],
+ ans:2,
+ exp:'If the ratio is 3:2 (dev:test), test effort = (2/3) × 600 = 400 person-days.',
+ why:['A — Incorrect. 200 would be a 3:1 ratio.','B — Incorrect. 300 would be a 2:1 ratio.','C — Correct. At a 3:2 dev:test ratio, 600 dev days → 400 test days.','D — Incorrect. 900 would mean test exceeds dev effort.']},
+
+// ── 5.1.5 ───────────────────────────────────────────────────────────────
+{id:'Q026',sec:'5.1.5',k:1,lo:'FL-5.1.5',obj:'Recall test case prioritization types',
+ q:'Which of the following is a named test case prioritization strategy in ISTQB CTFL v4.0?',
+ opts:['Alphabetical prioritization','Risk-based prioritization','Cost-based prioritization','Random prioritization'],
+ ans:1,
+ exp:'Risk-based prioritization is one of the strategies described in section 5.1.5, along with coverage-based and requirements-based prioritization.',
+ why:['A — Incorrect. Alphabetical prioritization is not a syllabus concept.','B — Correct. Risk-based prioritization is explicitly listed.','C — Incorrect. Cost-based prioritization is not listed in the syllabus.','D — Incorrect. Random prioritization is not a recognised strategy.']},
+
+{id:'Q027',sec:'5.1.5',k:3,lo:'FL-5.1.5',obj:'Apply test case prioritization with dependencies',
+ q:'Given test cases TC001 (priority 3, no dependency), TC002 (priority 2, depends on TC001), TC003 (priority 1, depends on TC002), TC004 (priority 2, depends on TC002), TC005 (priority 3, depends on TC002). Which test case runs third?',
+ opts:['TC003','TC004','TC005','TC002'],
+ ans:0,
+ exp:'TC001 runs first (no dependency). TC002 runs second (depends on TC001, highest remaining priority). TC003 has priority 1 (highest priority = most critical), so it runs third once its dependency TC002 is satisfied.',
+ why:['A — Correct. Order: TC001 (no dep), TC002 (dep on TC001), TC003 (priority 1, dep on TC002).','B — Incorrect. TC004 has priority 2; TC003 has priority 1 (higher priority).','C — Incorrect. TC005 has priority 3; TC003 has priority 1.','D — Incorrect. TC002 runs second, not third.']},
+
+// ── 5.1.6 ───────────────────────────────────────────────────────────────
+{id:'Q028',sec:'5.1.6',k:1,lo:'FL-5.1.6',obj:'Recall the structure of the test pyramid',
+ q:'In the test pyramid, what characterises the tests at the BOTTOM layer?',
+ opts:['Complex, slow, end-to-end tests covering large functionality','Small, isolated, fast tests checking small pieces of functionality','Manual exploratory tests','UI-based acceptance tests'],
+ ans:1,
+ exp:'The syllabus describes bottom-layer tests as "small, isolated, fast, and check a small piece of functionality, so usually a lot of them are needed."',
+ why:['A — Incorrect. Complex end-to-end tests are at the TOP of the pyramid.','B — Correct. Bottom-layer tests are small, isolated, fast, and numerous.','C — Incorrect. Exploratory testing is not positioned at the bottom of the pyramid.','D — Incorrect. UI acceptance tests are typically at the top.']},
+
+{id:'Q029',sec:'5.1.6',k:1,lo:'FL-5.1.6',obj:'Recall test pyramid layer characteristics',
+ q:'In the test pyramid, what happens to test execution time as you move toward the TOP of the pyramid?',
+ opts:['It decreases','It stays the same','It increases','It becomes automated'],
+ ans:2,
+ exp:'The syllabus states: "The higher the layer, the lower the test granularity… and the higher the test execution time."',
+ why:['A — Incorrect. Execution time increases toward the top, not decreases.','B — Incorrect. Execution time changes — it increases.','C — Correct. Higher layers have higher test execution time.','D — Incorrect. Automation level is not the characteristic that changes.']},
+
+{id:'Q030',sec:'5.1.6',k:1,lo:'FL-5.1.6',obj:"Recall Cohn's original test pyramid layers",
+ q:"Which three layers does the original test pyramid model (Cohn 2009) define?",
+ opts:['"Unit tests", "integration tests", "system tests"','"Unit tests", "service tests", "UI tests"','"Component tests", "API tests", "end-to-end tests"','"Smoke tests", "regression tests", "acceptance tests"'],
+ ans:1,
+ exp:'The syllabus states: "the original test pyramid model (Cohn 2009) defines three layers: \'unit tests\', \'service tests\' and \'UI tests\'."',
+ why:['A — Incorrect. "Integration" and "system" are not Cohn\'s original terms.','B — Correct. Cohn\'s three layers are unit tests, service tests, and UI tests.','C — Incorrect. These are alternative model names, not Cohn\'s original layers.','D — Incorrect. Smoke, regression, and acceptance are test types, not pyramid layers.']},
+
+// ── 5.1.7 ───────────────────────────────────────────────────────────────
+{id:'Q031',sec:'5.1.7',k:1,lo:'FL-5.1.7',obj:'Recall the two axes of the testing quadrants model',
+ q:'The testing quadrants model classifies tests on two axes. What are they?',
+ opts:['Automated vs manual, and functional vs non-functional','Business facing vs technology facing, and support the team vs critique the product','Unit vs system, and black-box vs white-box','Early vs late, and internal vs external'],
+ ans:1,
+ exp:'The testing quadrants model classifies tests as business facing or technology facing on one axis, and supporting the team or critiquing the product on the other.',
+ why:['A — Incorrect. Automated/manual and functional/non-functional are not the two axes.','B — Correct. The two axes are business/technology facing and support/critique.','C — Incorrect. Unit/system and black/white-box are not the axes.','D — Incorrect. Early/late and internal/external are not the axes.']},
+
+{id:'Q032',sec:'5.1.7',k:2,lo:'FL-5.1.7',obj:'Classify test types into the correct quadrant',
+ q:'User acceptance testing, usability testing, and exploratory testing belong to which quadrant?',
+ opts:['Q1 — technology facing, support the team','Q2 — business facing, support the team','Q3 — business facing, critique the product','Q4 — technology facing, critique the product'],
+ ans:2,
+ exp:'Q3 (business facing, critique the product) contains exploratory testing, usability testing, and user acceptance testing — user-oriented, often manual tests.',
+ why:['A — Incorrect. Q1 contains component and component integration tests.','B — Incorrect. Q2 contains functional tests, user story tests, API testing, simulations.','C — Correct. Q3 is business facing and critiques the product; it contains UAT, usability, and exploratory testing.','D — Incorrect. Q4 contains smoke tests and non-functional tests (except usability).']},
+
+{id:'Q033',sec:'5.1.7',k:2,lo:'FL-5.1.7',obj:'Classify test types into the correct quadrant',
+ q:'Smoke tests and non-functional tests (except usability) belong to which quadrant?',
+ opts:['Q1','Q2','Q3','Q4'],
+ ans:3,
+ exp:'Q4 (technology facing, critique the product) contains smoke tests and non-functional tests (except usability tests), and these tests are often automated.',
+ why:['A — Incorrect. Q1 contains component and component integration tests.','B — Incorrect. Q2 contains functional tests and user story tests.','C — Incorrect. Q3 contains exploratory, usability, and UAT.','D — Correct. Q4 is technology facing, critiques the product, and contains smoke and non-functional tests.']},
+
+{id:'Q034',sec:'5.1.7',k:2,lo:'FL-5.1.7',obj:'Summarise the purpose of the testing quadrants',
+ q:'What is the primary benefit of using the testing quadrants model in test management?',
+ opts:['It replaces the test pyramid by showing how many tests to write at each level','It helps ensure all appropriate test types and test levels are included in the SDLC, and helps differentiate test types for stakeholders','It automates test scheduling based on quadrant classification','It determines the exact ratio of manual to automated tests'],
+ ans:1,
+ exp:'The syllabus states the model "supports test management in visualizing these to ensure that all appropriate test types and test levels are included in the SDLC" and "provides a way to differentiate and describe the test types to all stakeholders."',
+ why:['A — Incorrect. The quadrants model complements the pyramid; it does not replace it.','B — Correct. Ensuring complete coverage of test types/levels and stakeholder communication are the key benefits.','C — Incorrect. The model is a visualisation aid, not an automation scheduling tool.','D — Incorrect. The model does not specify manual-to-automated ratios.']},
+
+// ── 5.2.1 ───────────────────────────────────────────────────────────────
+{id:'Q035',sec:'5.2.1',k:1,lo:'FL-5.2.1',obj:'Recall how risk level is calculated',
+ q:'How is risk level calculated in a quantitative risk assessment?',
+ opts:['Risk likelihood + risk impact','Risk likelihood × risk impact','Risk impact ÷ risk likelihood','Risk likelihood − risk impact'],
+ ans:1,
+ exp:'The syllabus states: "In the quantitative approach the risk level is calculated as the multiplication of risk likelihood and risk impact."',
+ why:['A — Incorrect. Addition does not produce risk level.','B — Correct. Risk level = risk likelihood × risk impact.','C — Incorrect. Division does not produce risk level.','D — Incorrect. Subtraction does not produce risk level.']},
+
+{id:'Q036',sec:'5.2.1',k:1,lo:'FL-5.2.1',obj:'Apply risk level calculation',
+ q:'A risk has a likelihood of 40% and an impact of $5,000. What is the risk level?',
+ opts:['$200','$2,000','$12,500','$5,040'],
+ ans:1,
+ exp:'Risk level = likelihood × impact = 0.40 × $5,000 = $2,000.',
+ why:['A — Incorrect. $200 = 0.04 × $5,000, wrong likelihood used.','B — Correct. 0.40 × $5,000 = $2,000.','C — Incorrect. $12,500 = $5,000 / 0.40, which is division not multiplication.','D — Incorrect. $5,040 is not a valid result of the formula.']},
+
+{id:'Q037',sec:'5.2.1',k:1,lo:'FL-5.2.1',obj:'Recall the two main risk management activities',
+ q:'According to the ISTQB syllabus, what are the two main risk management activities?',
+ opts:['Risk planning and risk reporting','Risk analysis and risk control','Risk identification and risk monitoring','Risk mitigation and risk assessment'],
+ ans:1,
+ exp:'The syllabus states: "The main risk management activities are: Risk analysis (consisting of risk identification and risk assessment) and Risk control (consisting of risk mitigation and risk monitoring)."',
+ why:['A — Incorrect. Planning and reporting are not the two main activities named.','B — Correct. Risk analysis and risk control are the two main activities.','C — Incorrect. Risk identification is part of risk analysis; monitoring is part of risk control.','D — Incorrect. Mitigation and assessment are components of the two activities, not the activities themselves.']},
+
+// ── 5.2.2 ───────────────────────────────────────────────────────────────
+{id:'Q038',sec:'5.2.2',k:2,lo:'FL-5.2.2',obj:'Distinguish product risks from project risks',
+ q:"Which of the following is a PRODUCT risk?",
+ opts:["Scope creep","Insufficient budget for testing","Poor architecture leading to performance failures","Key tester leaving the project"],
+ ans:2,
+ exp:'Product risks relate to the quality of the test object — poor architecture causing performance failures is a quality risk in the product. The others are project risks (scope, budget, personnel).',
+ why:['A — Incorrect. Scope creep is a project risk affecting the project.','B — Incorrect. Insufficient budget is a project risk.','C — Correct. Poor architecture causing failures is a product quality risk.','D — Incorrect. Staff departure is a project risk.']},
+
+{id:'Q039',sec:'5.2.2',k:2,lo:'FL-5.2.2',obj:'Distinguish project risks from product risks',
+ q:"Which of the following is a PROJECT risk?",
+ opts:["A security vulnerability in the login module","Too long a response time for database queries","Missing or unclear requirements","A defect in the payment calculation logic"],
+ ans:2,
+ exp:'Missing or unclear requirements is a project risk — it threatens the project outcome (schedule, budget, scope). The other options are product quality risks.',
+ why:['A — Incorrect. A security vulnerability is a product risk.','B — Incorrect. Response time issues are a product quality risk.','C — Correct. Missing/unclear requirements is a project risk affecting the project.','D — Incorrect. Defects in business logic are product risks.']},
+
+// ── 5.2.3 ───────────────────────────────────────────────────────────────
+{id:'Q040',sec:'5.2.3',k:2,lo:'FL-5.2.3',obj:'Explain how risk analysis influences test scope',
+ q:'How does product risk analysis MOST directly influence testing?',
+ opts:['It determines the SDLC model to be used on the project','It determines the test scope and helps prioritize testing to find critical defects as early as possible','It replaces the need for entry and exit criteria','It defines the project budget and schedule'],
+ ans:1,
+ exp:'The syllabus states that product risk analysis results are used to determine the test scope, propose test levels and types, select techniques, estimate effort, prioritize testing to find critical defects early, and identify additional activities.',
+ why:['A — Incorrect. Risk analysis does not determine the SDLC model.','B — Correct. Determining test scope and prioritizing to find critical defects early is the direct influence.','C — Incorrect. Entry and exit criteria are still needed alongside risk analysis.','D — Incorrect. Budget and schedule are in the test plan, not driven solely by risk analysis.']},
+
+{id:'Q041',sec:'5.2.3',k:2,lo:'FL-5.2.3',obj:'Explain how risk analysis influences test thoroughness',
+ q:'A high-risk component has been identified during product risk analysis. How should this influence testing?',
+ opts:['The component should be excluded from testing as high risk means testing is too dangerous','More thorough testing — higher coverage, more test types, and more experienced testers — should be applied to that component','The same testing approach used for all other components should be applied','The component should only be tested with automated regression tests'],
+ ans:1,
+ exp:'Product risk analysis results are used to prioritise testing and increase thoroughness for high-risk areas — selecting appropriate techniques, coverage levels, and test types.',
+ why:['A — Incorrect. High risk means more testing is needed, not exclusion.','B — Correct. Risk analysis drives increased thoroughness for high-risk components.','C — Incorrect. Risk-based testing explicitly differentiates effort based on risk level.','D — Incorrect. The appropriate test types, not just regression, should be applied.']},
+
+// ── 5.2.4 ───────────────────────────────────────────────────────────────
+{id:'Q042',sec:'5.2.4',k:2,lo:'FL-5.2.4',obj:'Explain product risk control activities',
+ q:'Which two activities make up product risk control?',
+ opts:['Risk identification and risk assessment','Risk mitigation and risk monitoring','Risk avoidance and risk transfer','Risk planning and risk reporting'],
+ ans:1,
+ exp:'The syllabus states: "Product risk control consists of risk mitigation and risk monitoring."',
+ why:['A — Incorrect. Risk identification and assessment are part of risk analysis, not risk control.','B — Correct. Risk control = risk mitigation + risk monitoring.','C — Incorrect. These are risk response options, not risk control activities.','D — Incorrect. Planning and reporting are not named as risk control activities.']},
+
+{id:'Q043',sec:'5.2.4',k:2,lo:'FL-5.2.4',obj:'Explain what measures can be taken to mitigate product risk by testing',
+ q:'Which of the following is a testing action that can mitigate product risk?',
+ opts:['Increasing the project budget to allow more development time','Applying appropriate test techniques and coverage levels to the risky area','Transferring the project risk to a third-party vendor','Reducing the scope of the release'],
+ ans:1,
+ exp:'The syllabus lists "apply the appropriate test techniques and coverage levels" as one of the actions that can mitigate product risks by testing.',
+ why:['A — Incorrect. Increasing budget is a project management response, not a testing action.','B — Correct. Appropriate techniques and coverage levels are an explicit testing risk mitigation action.','C — Incorrect. Risk transfer is a risk response option, not a testing action.','D — Incorrect. Scope reduction is a project management decision.']},
+
+// ── 5.3.1 ───────────────────────────────────────────────────────────────
+{id:'Q044',sec:'5.3.1',k:1,lo:'FL-5.3.1',obj:'Recall metrics used for testing',
+ q:'Which of the following is a test metric used to measure progress?',
+ opts:['Lines of code written per sprint','Defect density (defects per unit of code or functionality)','Number of developers on the team','The size of the test environment'],
+ ans:1,
+ exp:'Defect density is a standard test metric used to assess quality and progress. The others are project management or development metrics.',
+ why:['A — Incorrect. Lines of code is a development productivity metric.','B — Correct. Defect density is a standard test metric listed in the syllabus.','C — Incorrect. Team size is a resource metric, not a test metric.','D — Incorrect. Environment size is an infrastructure metric.']},
+
+{id:'Q045',sec:'5.3.1',k:1,lo:'FL-5.3.1',obj:'Recall test metrics including burn-down charts',
+ q:'Which visual tool is commonly used in Agile to track test progress?',
+ opts:['Gantt chart','Burn-down chart','Fishbone diagram','Pareto chart'],
+ ans:1,
+ exp:'The syllabus mentions burn-down charts as an example of a metric/tool used to track progress in testing, particularly in Agile contexts.',
+ why:['A — Incorrect. Gantt charts are project planning tools, less common in Agile.','B — Correct. Burn-down charts are listed in the syllabus as a progress tracking tool.','C — Incorrect. Fishbone diagrams are used for root cause analysis.','D — Incorrect. Pareto charts are used in quality management, not primarily for test progress.']},
+
+// ── 5.3.2 ───────────────────────────────────────────────────────────────
+{id:'Q046',sec:'5.3.2',k:2,lo:'FL-5.3.2',obj:'Summarise types of test reports',
+ q:'What are the two main types of test reports described in the ISTQB CTFL v4.0 syllabus?',
+ opts:['Test strategy report and test design report','Test progress report and test completion report','Test analysis report and test execution report','Test risk report and test metrics report'],
+ ans:1,
+ exp:'The syllabus describes two main test reports: the test progress report (produced during testing) and the test completion report (produced at project milestones).',
+ why:['A — Incorrect. Test strategy and test design are not report types in the syllabus.','B — Correct. Test progress report and test completion report are the two types.','C — Incorrect. Analysis and execution reports are not the named types.','D — Incorrect. Risk and metrics reports are not the named test report types.']},
+
+{id:'Q047',sec:'5.3.2',k:2,lo:'FL-5.3.2',obj:'Identify what is NOT a valid purpose for a test report',
+ q:'Which of the following is NOT a valid purpose of a test report?',
+ opts:['Tracking test progress and identifying areas requiring further attention','Providing information about each defect, such as steps to reproduce it','Providing information on tests executed, results, and defects found','Providing information on testing planned for the next period'],
+ ans:1,
+ exp:'Providing detailed reproduction steps for each defect is the purpose of a defect report, not a test progress or completion report.',
+ why:['A — Incorrect. Tracking progress is a valid test report purpose.','B — Correct. Defect reproduction steps belong in defect reports, not test reports.','C — Incorrect. Reporting test execution results is a valid test report purpose.','D — Incorrect. Forward-looking planning information is a valid test progress report purpose.']},
+
+// ── 5.3.3 ───────────────────────────────────────────────────────────────
+{id:'Q048',sec:'5.3.3',k:2,lo:'FL-5.3.3',obj:'Exemplify communicating test status',
+ q:"During system testing, a tester finds that 40% of high-priority test cases have failed and 5 critical defects are open. How should the test manager communicate this?",
+ opts:['Send a raw data spreadsheet with no context','Immediately stop testing without notifying anyone','Communicate the status clearly using a test progress report, highlighting risk to stakeholders and proposing corrective actions','Wait until the test phase ends before reporting'],
+ ans:2,
+ exp:'Test monitoring requires communicating test status to stakeholders so they can make informed decisions. A test progress report with risk visibility and proposed corrective actions is the correct approach.',
+ why:['A — Incorrect. Raw data without context does not serve communication purposes.','B — Incorrect. Stopping testing without notification is not appropriate.','C — Correct. A structured test progress report with risk context and proposed actions is the correct communication.','D — Incorrect. Waiting until the end defeats the purpose of test monitoring.']},
+
+// ── 5.4.1 ───────────────────────────────────────────────────────────────
+{id:'Q049',sec:'5.4.1',k:2,lo:'FL-5.4.1',obj:'Summarise how CM supports testing',
+ q:'How does configuration management support testing?',
+ opts:['It defines the test techniques to be used at each test level','It ensures consistency and integrity of testware by tracking and controlling versions of test work products','It generates automated test scripts from requirements','It replaces the need for a risk register'],
+ ans:1,
+ exp:'The syllabus states: "Proper configuration management ensures consistency and integrity of work products." In testing, this means tracking versions of the test plan, test cases, and test environment configurations.',
+ why:['A — Incorrect. Test techniques are defined in the test approach section of the test plan.','B — Correct. Configuration management ensures consistency and integrity of testware through version control.','C — Incorrect. CM does not generate automated scripts.','D — Incorrect. The risk register is separate from CM.']},
+
+{id:'Q050',sec:'5.4.1',k:2,lo:'FL-5.4.1',obj:'Explain the role of configuration items in testing',
+ q:'What is a configuration item in the context of testing?',
+ opts:['A risk identified during product risk analysis','Any work product that is placed under configuration management control, such as a test plan or test script','A type of defect report','A specific test environment setting'],
+ ans:1,
+ exp:'A configuration item is any work product placed under CM control. In testing, these include test plans, test scripts, test data, and environment configurations.',
+ why:['A — Incorrect. A risk is recorded in the risk register, not a CM item.','B — Correct. Any work product under CM control is a configuration item.','C — Incorrect. A defect report is a test execution work product, not a configuration item per se.','D — Incorrect. An environment setting is part of the environment configuration but the item itself is what is managed.']},
+
+// ── 5.5.1 ───────────────────────────────────────────────────────────────
+{id:'Q051',sec:'5.5.1',k:1,lo:'FL-5.5.1',obj:'Recall the purpose of a defect report',
+ q:'What is the primary purpose of a defect report?',
+ opts:['To describe the test techniques used to find the defect','To provide sufficient information for a defect to be reproduced, evaluated, and ultimately fixed','To assign the defect to a developer immediately','To document the test metrics for the current sprint'],
+ ans:1,
+ exp:'The primary purpose of a defect report is to provide enough information for the defect to be reproduced, evaluated in terms of severity and priority, and then fixed.',
+ why:['A — Incorrect. Test techniques are documented in the test approach, not the defect report.','B — Correct. Reproduction, evaluation, and fixability are the core purposes.','C — Incorrect. Assignment may be part of a process, but it is not the primary purpose of the report itself.','D — Incorrect. Metrics are captured in test progress reports, not defect reports.']},
+
+{id:'Q052',sec:'5.5.1',k:3,lo:'FL-5.5.1',obj:'Prepare a defect report with appropriate content',
+ q:'A tester finds that clicking "Submit" on the order form causes a 500 server error. Which of the following is the BEST defect report summary?',
+ opts:['Something is broken on the order form','500 error on order form Submit button — steps to reproduce: navigate to /order, fill form, click Submit — expected: order confirmation — actual: HTTP 500','The backend is wrong','Submit button does not work properly sometimes'],
+ ans:1,
+ exp:'A good defect report includes: a clear summary, steps to reproduce, expected result, actual result, and environment details. Option B provides all of these.',
+ why:['A — Incorrect. "Something is broken" is vague and lacks reproduction steps and expected/actual results.','B — Correct. This is a properly structured defect report with summary, steps, expected, and actual.','C — Incorrect. "Backend is wrong" is too vague and untestable.','D — Incorrect. "Sometimes" introduces ambiguity; steps and results are missing.']},
+
+{id:'Q053',sec:'5.5.1',k:3,lo:'FL-5.5.1',obj:'Identify appropriate defect report fields',
+ q:'Which information is MOST critical to include in a defect report to allow it to be reproduced?',
+ opts:['The name of the test manager who approved the test plan','Precise steps to reproduce, actual result, expected result, and test environment details','The project budget remaining at the time of defect discovery','A list of all test cases executed before finding the defect'],
+ ans:1,
+ exp:'Steps to reproduce, actual vs expected results, and environment details are the core content required for a defect to be reproduced and investigated.',
+ why:['A — Incorrect. The test manager name is irrelevant to reproduction.','B — Correct. Steps to reproduce, actual/expected results, and environment details are the essential fields.','C — Incorrect. Budget information has no bearing on defect reproduction.','D — Incorrect. All previous test cases are not needed — only relevant context matters.']}
+];
+
+// ═══════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════
+let answered=0, correct=0, wrong=0;
+let activeFilter='all', searchQuery='';
+let totalVisible=QB.length;
+
+// ═══════════════════════════════════════════════════════
+//  BUILD UI
+// ═══════════════════════════════════════════════════════
+function buildUI(){
+  const main=document.getElementById('main');
+  main.innerHTML='';
+  const groups={};
+  QB.forEach(q=>{
+    if(!groups[q.sec]) groups[q.sec]=[];
+    groups[q.sec].push(q);
+  });
+  SECTIONS.forEach(sec=>{
+    const qs=groups[sec.id]||[];
+    const klc=['lo-k1','lo-k2','lo-k3'][sec.k-1];
+    const sg=document.createElement('div');
+    sg.className='section-group';
+    sg.dataset.sec=sec.id;
+    sg.innerHTML=`<div class="section-hd">
+      <div class="section-hd-icon">${sec.id}</div>
+      <div class="section-hd-info">
+        <div class="section-hd-title">${sec.label}</div>
+        <div class="section-hd-sub">${sec.lo} &middot; <span class="q-lo ${klc}">K${sec.k}</span></div>
+      </div>
+      <div class="section-hd-count">${qs.length} Q</div>
+    </div>`;
+    qs.forEach((q,i)=>{ sg.appendChild(buildCard(q,i)); });
+    main.appendChild(sg);
+  });
+  updateStats();
+  applyFilters();
+}
+
+function buildCard(q,i){
+  const klc=['lo-k1','lo-k2','lo-k3'][q.k-1];
+  const div=document.createElement('div');
+  div.className='q-card';
+  div.id='card-'+q.id;
+  div.dataset.k='k'+q.k;
+  div.dataset.sec=q.sec;
+  div.dataset.lo=q.lo;
+  div.dataset.text=(q.q+' '+q.opts.join(' ')+' '+q.obj+' '+q.sec+' '+q.lo+' k'+q.k).toLowerCase();
+
+  const letters=['A','B','C','D','E'];
+  div.innerHTML=`
+    <div class="q-head">
+      <div class="q-meta">
+        <span class="q-num">${q.id}</span>
+        <span class="q-lo ${klc}">K${q.k}</span>
+        <span class="q-obj">${q.lo} &middot; ${q.obj}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+    </div>
+    <div class="q-body">
+      <div class="opts" id="opts-${q.id}">
+        ${q.opts.map((o,j)=>`
+          <button class="opt" id="opt-${q.id}-${j}" onclick="pick('${q.id}',${j})" data-j="${j}">
+            <span class="opt-letter">${letters[j]}</span>
+            <span>${o}</span>
+            <span class="opt-icon" id="icon-${q.id}-${j}"></span>
+          </button>`).join('')}
+      </div>
+      <button class="reveal-btn" id="revbtn-${q.id}" onclick="revealOne('${q.id}')">Show answer & explanation</button>
+      <div class="result-area" id="result-${q.id}">
+        <div class="result-verdict" id="verdict-${q.id}"></div>
+        <div class="exp-box">
+          <div class="exp-main">
+            <span class="exp-obj-tag q-lo ${klc}">${q.lo} · K${q.k} · ${q.obj}</span><br>
+            ${q.exp}
+          </div>
+          <button class="why-toggle" id="why-toggle-${q.id}" onclick="toggleWhy('${q.id}')">
+            Why not the others? <span class="arrow">▼</span>
+          </button>
+          <div class="why-content" id="why-${q.id}">
+            ${q.why.map((w,j)=>{
+              const letter=letters[j];
+              const correct_flag = j===q.ans;
+              return `<div class="why-item${correct_flag?' is-correct':''}"><span class="why-letter">${letter}</span><span>${w}</span></div>`;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  return div;
+}
+
+// ═══════════════════════════════════════════════════════
+//  INTERACTION
+// ═══════════════════════════════════════════════════════
+function pick(qid, oi){
+  const q=QB.find(x=>x.id===qid);
+  const opts=document.getElementById('opts-'+qid);
+  if(opts.dataset.done) return;
+  opts.dataset.done='1';
+  lockOpts(qid, q, oi, 'picked');
+  answered++;
+  if(oi===q.ans) correct++; else wrong++;
+  showResult(qid, q, oi, oi===q.ans ? 'correct' : 'wrong');
+  updateStats();
+  if(answered===totalVisible) showDone();
+}
+
+function revealOne(qid){
+  const q=QB.find(x=>x.id===qid);
+  const opts=document.getElementById('opts-'+qid);
+  if(opts.dataset.done) return;
+  opts.dataset.done='revealed';
+  lockOpts(qid, q, -1, 'reveal');
+  showResult(qid, q, -1, 'reveal');
+  const rb=document.getElementById('revbtn-'+qid);
+  rb.textContent='Answer shown'; rb.disabled=true;
+}
+
+function lockOpts(qid, q, chosen, mode){
+  q.opts.forEach((_,j)=>{
+    const btn=document.getElementById('opt-'+qid+'-'+j);
+    const icon=document.getElementById('icon-'+qid+'-'+j);
+    btn.disabled=true;
+    if(j===q.ans){ btn.classList.add(mode==='reveal'?'reveal':'correct'); icon.textContent='✓'; }
+    else if(j===chosen){ btn.classList.add('wrong'); icon.textContent='✗'; }
+  });
+}
+
+function showResult(qid, q, chosen, mode){
+  const area=document.getElementById('result-'+qid);
+  const verdict=document.getElementById('verdict-'+qid);
+  area.classList.add('show');
+  document.getElementById('revbtn-'+qid).style.display='none';
+  if(mode==='correct'){
+    verdict.className='result-verdict verdict-correct';
+    verdict.textContent='✓ Correct';
+  } else if(mode==='wrong'){
+    verdict.className='result-verdict verdict-wrong';
+    verdict.textContent='✗ Incorrect — see explanation below';
+  } else {
+    verdict.className='result-verdict verdict-reveal';
+    verdict.textContent='ℹ Answer revealed';
+  }
+}
+
+function toggleWhy(qid){
+  const btn=document.getElementById('why-toggle-'+qid);
+  const content=document.getElementById('why-'+qid);
+  const open=content.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+
+function revealAll(){
+  QB.forEach(q=>{
+    const opts=document.getElementById('opts-'+q.id);
+    if(opts && !opts.dataset.done) revealOne(q.id);
+  });
+}
+
+function resetAll(){
+  answered=0; correct=0; wrong=0;
+  document.getElementById('done-banner').classList.remove('show');
+  buildUI();
+}
+
+// ═══════════════════════════════════════════════════════
+//  FILTERS + SEARCH
+// ═══════════════════════════════════════════════════════
+function setFilter(f, el){
+  activeFilter=f;
+  document.querySelectorAll('.flt').forEach(b=>{
+    b.className='flt';
+  });
+  if(f==='all') el.classList.add('on-all');
+  else if(f==='k1') el.classList.add('on-k1');
+  else if(f==='k2') el.classList.add('on-k2');
+  else if(f==='k3') el.classList.add('on-k3');
+  else el.classList.add('on-sec');
+  applyFilters();
+}
+
+document.getElementById('search').addEventListener('input',function(){
+  searchQuery=this.value.trim().toLowerCase();
+  document.getElementById('search-clear').classList.toggle('show', searchQuery.length>0);
+  applyFilters();
+});
+
+function clearSearch(){
+  document.getElementById('search').value='';
+  searchQuery='';
+  document.getElementById('search-clear').classList.remove('show');
+  applyFilters();
+}
+
+function applyFilters(){
+  let visible=0;
+  QB.forEach(q=>{
+    const card=document.getElementById('card-'+q.id);
+    if(!card) return;
+    const kMatch = activeFilter==='all'||activeFilter==='k'+q.k;
+    const secMatch = activeFilter==='all'||activeFilter==='k1'||activeFilter==='k2'||activeFilter==='k3'
+      ? true
+      : q.sec.startsWith(activeFilter);
+    const finalSecMatch = (activeFilter==='all'||activeFilter.startsWith('k')) ? true
+      : q.sec.startsWith(activeFilter);
+    const filterMatch = (activeFilter==='all')
+      ? true
+      : (activeFilter==='k1'||activeFilter==='k2'||activeFilter==='k3')
+        ? 'k'+q.k===activeFilter
+        : q.sec.startsWith(activeFilter);
+    const sMatch = !searchQuery || card.dataset.text.includes(searchQuery);
+    const show = filterMatch && sMatch;
+    card.classList.toggle('hidden', !show);
+    if(show) visible++;
+  });
+  totalVisible=visible;
+  document.getElementById('results-count').textContent=`Showing ${visible} of ${QB.length} questions`;
+  document.getElementById('prog-label').textContent=`${answered} of ${visible} answered`;
+  document.getElementById('prog-fill').style.width=visible?Math.round(answered/visible*100)+'%':'0%';
+  // hide empty section headers
+  document.querySelectorAll('.section-group').forEach(sg=>{
+    const any=[...sg.querySelectorAll('.q-card')].some(c=>!c.classList.contains('hidden'));
+    sg.style.display=any?'':'none';
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  STATS
+// ═══════════════════════════════════════════════════════
+function updateStats(){
+  document.getElementById('s-ans').textContent=answered+' ans';
+  document.getElementById('s-cor').textContent=correct+' ✓';
+  document.getElementById('s-wrg').textContent=wrong+' ✗';
+  document.getElementById('s-pct').textContent=answered?Math.round(correct/answered*100)+'%':'—%';
+  document.getElementById('prog-fill').style.width=totalVisible?Math.round(answered/totalVisible*100)+'%':'0%';
+  document.getElementById('prog-label').textContent=`${answered} of ${totalVisible} answered`;
+}
+
+function showDone(){
+  const pct=Math.round(correct/totalVisible*100);
+  const msg=pct>=90?'Outstanding — exceptional grasp of Chapter 5!'
+    :pct>=80?'Excellent work — strong understanding of test management.'
+    :pct>=60?'Good effort. Review explanations for questions you missed.'
+    :'Keep studying — focus on each section and its learning objective.';
+  document.getElementById('done-score').textContent=`${correct}/${totalVisible} · ${pct}%`;
+  document.getElementById('done-msg').textContent=msg;
+  document.getElementById('done-banner').classList.add('show');
+  document.getElementById('done-banner').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+//  REFERENCE CARD
+// ═══════════════════════════════════════════════════════
+function toggleRef(){
+  const body=document.getElementById('ref-body');
+  const open=body.classList.toggle('open');
+  document.getElementById('ref-arrow').textContent=open?'▲':'▼';
+}
+
+// ═══════════════════════════════════════════════════════
+//  SCROLL TOP
+// ═══════════════════════════════════════════════════════
+window.addEventListener('scroll',()=>{
+  document.getElementById('scroll-top').classList.toggle('visible',window.scrollY>400);
+});
+
+// INIT
+buildUI();
+</script>
+</body>
+</html>
